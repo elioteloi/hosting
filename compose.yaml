@@ -1,0 +1,33 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /config-homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      TZ: Europe/Amsterdam
+
+  jellyfin:
+    image: jellyfin/jellyfin:2026061922
+    container_name: jellyfin
+    ports:
+      - "8096:8096"
+    volumes:
+      - /config-jellyfin:/config
+      - ${MEDIA_PATH}:/media
+  plex:
+    image: plexinc/pms-docker:latest
+    container_name: plex
+    ports:
+      - "32400:32400"
+    environment:
+      - TZ=America/Sao_Paulo
+      - PLEX_CLAIM=your_claim_token
+    volumes:
+      - /config-plex:/config
+      - ${MEDIA_PATH}:/data
